@@ -28,11 +28,11 @@ namespace CookieClicker.Forms
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             System.Timers.Timer myTimer = new System.Timers.Timer();
-            myTimer.Elapsed += DisplayTimeEvent;
+            myTimer.Elapsed += LabelsTimeEvent;
             myTimer.Interval = 200; 
             myTimer.Start();
         }
-        private void DisplayTimeEvent(object source, ElapsedEventArgs e)
+        private void LabelsTimeEvent(object source, ElapsedEventArgs e)
         {
             ReloadLabels();
         }
@@ -42,8 +42,8 @@ namespace CookieClicker.Forms
         /// </summary>
         private void ReloadLabels()
         {
-            ThreadHelperClass.SetText(this, label2, _clickerGame.CookiesOverallyCollected.ToString("F"));
-            ThreadHelperClass.SetText(this, label4, _clickerGame.CookiesOverallySpent.ToString("F"));
+            ThreadHelperClass.SetText(this, label2, NumberFormatter.Double(_clickerGame.CookiesOverallyCollected));
+            ThreadHelperClass.SetText(this, label4, NumberFormatter.Double(_clickerGame.CookiesOverallySpent));
             ThreadHelperClass.SetText(this,label6,_clickerGame.ClicksDone.ToString());
             ThreadHelperClass.SetText(this,label8,_clickerGame.GameStarted.ToLongDateString());
         }

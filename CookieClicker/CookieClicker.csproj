@@ -59,6 +59,7 @@
       <DependentUpon>Statistics.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Game.cs" />
+    <Compile Include="Models\Helpers\NumberFormatter.cs" />
     <Compile Include="Models\Upgrades\UpgradeMath.cs" />
     <Compile Include="Models\Helpers\Hash.cs" />
     <Compile Include="Models\Helpers\ThreadHelperClass.cs" />

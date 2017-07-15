@@ -6,14 +6,14 @@ namespace CookieClicker.Models.Helpers
 {
     public class Hash
     {
-        readonly byte[] entropy = { 1, 2, 3, 4, 5, 6 }; //the entropy
+        private readonly byte[] _entropy = { 1, 2, 3, 4, 5, 6 }; //the entropy
         private string Encrypt(string text)
         {
             // first, convert the text to byte array 
             byte[] originalText = Encoding.Unicode.GetBytes(text);
 
             // then use Protect() to encrypt your data 
-            byte[] encryptedText = ProtectedData.Protect(originalText, entropy, DataProtectionScope.CurrentUser);
+            byte[] encryptedText = ProtectedData.Protect(originalText, _entropy, DataProtectionScope.CurrentUser);
 
             //and return the encrypted message 
             return Convert.ToBase64String(encryptedText);
@@ -25,7 +25,7 @@ namespace CookieClicker.Models.Helpers
             byte[] encryptedText = Convert.FromBase64String(text);
 
             // calling Unprotect() that returns the original text 
-            byte[] originalText = ProtectedData.Unprotect(encryptedText, entropy, DataProtectionScope.CurrentUser);
+            byte[] originalText = ProtectedData.Unprotect(encryptedText, _entropy, DataProtectionScope.CurrentUser);
 
             // finally, returning the result 
             return Encoding.Unicode.GetString(originalText);

@@ -1,6 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Timers;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using CookieClicker.Models;
 using CookieClicker.Models.Helpers;
 
@@ -8,11 +12,19 @@ namespace CookieClicker.Forms
 {
     public partial class ClickerGame : Form
     {
-        private Game _clickerGame = new Game();
+        private Game _clickerGame;
         BackgroundWorker _bw = new BackgroundWorker();
         public ClickerGame()
         {
             InitializeComponent();
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\save.xml"))
+            {
+                LoadGame();
+            }
+            else
+            {
+                _clickerGame = new Game();
+            }
             _bw.DoWork += backgroundWorker1_DoWork;
             if (!_bw.IsBusy)
             {
@@ -29,12 +41,12 @@ namespace CookieClicker.Forms
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             System.Timers.Timer cpsTimer = new System.Timers.Timer();
-            cpsTimer.Elapsed += DisplayTimeEvent;
-            cpsTimer.Interval = 1000; // 1000 ms is one second
+            cpsTimer.Elapsed += FarmingCookiesTimeEvent;
+            cpsTimer.Interval = 1000;
             cpsTimer.Start();
 
             System.Timers.Timer buttonsTimer = new System.Timers.Timer();
-            buttonsTimer.Elapsed += DisplayTimeEvent2;
+            buttonsTimer.Elapsed += ButtonsTimeEvent;
             buttonsTimer.Interval = 200; 
             buttonsTimer.Start();
         }
@@ -44,7 +56,7 @@ namespace CookieClicker.Forms
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
-        private void DisplayTimeEvent2(object source, ElapsedEventArgs e)
+        private void ButtonsTimeEvent(object source, ElapsedEventArgs e)
         {
             if (_clickerGame.CookiesColected >= _clickerGame.StrongClick.Cost)
             {
@@ -61,7 +73,7 @@ namespace CookieClicker.Forms
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
-        private void DisplayTimeEvent(object source, ElapsedEventArgs e)
+        private void FarmingCookiesTimeEvent(object source, ElapsedEventArgs e)
         {
             _clickerGame.CookiesColected += _clickerGame.CookiesPerSecond;
             _clickerGame.CookiesOverallyCollected += _clickerGame.CookiesPerSecond;
@@ -72,15 +84,15 @@ namespace CookieClicker.Forms
         /// </summary>
         private void ReloadLabels()
         {
-            ThreadHelperClass.SetText(this,CookieColectedLabel,_clickerGame.CookiesColected.ToString("F"));
-            ThreadHelperClass.SetText(this,CPCLabel,_clickerGame.CookiesPerClick.ToString("F"));
-            ThreadHelperClass.SetText(this,CPSLabel, _clickerGame.CookiesPerSecond.ToString("F"));
-            ThreadHelperClass.SetText(this,StrongClickButton,_clickerGame.StrongClick.Cost.ToString("F"));
-            ThreadHelperClass.SetText(this,PointerButton,_clickerGame.Pointer.Cost.ToString("F"));
-            ThreadHelperClass.SetText(this,StrongClickLevelLabel,_clickerGame.StrongClick.Level.ToString("D"));
-            ThreadHelperClass.SetText(this,StrongClickCPCLabel, _clickerGame.StrongClick.CpcToLabel.ToString("F"));
-            ThreadHelperClass.SetText(this,PointerLevelLabel,_clickerGame.Pointer.Level.ToString("D"));
-            ThreadHelperClass.SetText(this,PointerCPSLabel,_clickerGame.Pointer.CpsToLabel.ToString("F"));
+            ThreadHelperClass.SetText(this,CookieColectedLabel,NumberFormatter.Double(_clickerGame.CookiesColected));
+            ThreadHelperClass.SetText(this,CPCLabel,NumberFormatter.Double(_clickerGame.CookiesPerClick));
+            ThreadHelperClass.SetText(this,CPSLabel, NumberFormatter.Double(_clickerGame.CookiesPerSecond));
+            ThreadHelperClass.SetText(this,StrongClickButton, NumberFormatter.Double(_clickerGame.StrongClick.Cost));
+            ThreadHelperClass.SetText(this,PointerButton, NumberFormatter.Double(_clickerGame.Pointer.Cost));
+            ThreadHelperClass.SetText(this,StrongClickLevelLabel, NumberFormatter.Double(_clickerGame.StrongClick.Level));
+            ThreadHelperClass.SetText(this,StrongClickCPCLabel, NumberFormatter.Double(_clickerGame.StrongClick.CpcToLabel));
+            ThreadHelperClass.SetText(this,PointerLevelLabel, NumberFormatter.Double(_clickerGame.Pointer.Level));
+            ThreadHelperClass.SetText(this,PointerCPSLabel, NumberFormatter.Double(_clickerGame.Pointer.CpsToLabel));
         }
 
         /// <summary>
@@ -106,6 +118,7 @@ namespace CookieClicker.Forms
                 StrongClickButton.Enabled = false;
                 PointerButton.Enabled = false;
                 _clickerGame.CookiesColected -= _clickerGame.StrongClick.Cost;
+                _clickerGame.CookiesOverallySpent += _clickerGame.StrongClick.Cost;
                 _clickerGame.StrongClick.LevelUp();
                 _clickerGame.CookiesPerClick += _clickerGame.StrongClick.Cpc;
             }
@@ -125,6 +138,7 @@ namespace CookieClicker.Forms
                 PointerButton.Enabled = false;
                 StrongClickButton.Enabled = false;
                 _clickerGame.CookiesColected -= _clickerGame.Pointer.Cost;
+                _clickerGame.CookiesOverallySpent += _clickerGame.Pointer.Cost;
                 _clickerGame.Pointer.LevelUp();
                 _clickerGame.CookiesPerSecond += _clickerGame.Pointer.Cps;
             }
@@ -143,6 +157,37 @@ namespace CookieClicker.Forms
             _clickerGame.CookiesOverallyCollected += _clickerGame.CookiesPerClick;
             _clickerGame.ClicksDone += 1;
             ReloadLabels();
+        }
+
+        /// <summary>
+        /// Saves game progress in xml format to save.xml
+        /// </summary>
+        private void SaveGame()
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + @"\save.xml";
+            FileStream outFile = File.Create(path);
+            XmlSerializer formatter = new XmlSerializer(typeof(Game));
+            formatter.Serialize(outFile, _clickerGame);
+        }
+
+
+        /// <summary>
+        /// Loads game from xml format file save.xml
+        /// </summary>
+        private void LoadGame()
+        {
+            string file = AppDomain.CurrentDomain.BaseDirectory + @"\save.xml";
+            XmlSerializer formatter = new XmlSerializer(typeof(Game));
+            FileStream aFile = new FileStream(file, FileMode.Open);
+            byte[] buffer = new byte[aFile.Length];
+            aFile.Read(buffer, 0, (int)aFile.Length);
+            MemoryStream stream = new MemoryStream(buffer);
+            _clickerGame = (Game)formatter.Deserialize(stream);
+        }
+
+        private void ClickerGame_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveGame();
         }
     }
 }

@@ -52,6 +52,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -119,7 +120,7 @@
             this.PointerCPSLabel.AutoSize = true;
             this.PointerCPSLabel.Location = new System.Drawing.Point(153, 66);
             this.PointerCPSLabel.Name = "PointerCPSLabel";
-            this.PointerCPSLabel.Size = new System.Drawing.Size(41, 13);
+            this.PointerCPSLabel.Size = new System.Drawing.Size(87, 13);
             this.PointerCPSLabel.TabIndex = 10;
             this.PointerCPSLabel.Text = "PointerCPSLabel";
             // 
@@ -146,7 +147,7 @@
             this.PointerLevelLabel.AutoSize = true;
             this.PointerLevelLabel.Location = new System.Drawing.Point(122, 44);
             this.PointerLevelLabel.Name = "PointerLevelLabel";
-            this.PointerLevelLabel.Size = new System.Drawing.Size(41, 13);
+            this.PointerLevelLabel.Size = new System.Drawing.Size(92, 13);
             this.PointerLevelLabel.TabIndex = 8;
             this.PointerLevelLabel.Text = "PointerLevelLabel";
             // 
@@ -191,7 +192,7 @@
             this.StrongClickCPCLabel.AutoSize = true;
             this.StrongClickCPCLabel.Location = new System.Drawing.Point(153, 66);
             this.StrongClickCPCLabel.Name = "StrongClickCPCLabel";
-            this.StrongClickCPCLabel.Size = new System.Drawing.Size(35, 13);
+            this.StrongClickCPCLabel.Size = new System.Drawing.Size(108, 13);
             this.StrongClickCPCLabel.TabIndex = 10;
             this.StrongClickCPCLabel.Text = "StrongClickCPCLabel";
             // 
@@ -218,7 +219,7 @@
             this.StrongClickLevelLabel.AutoSize = true;
             this.StrongClickLevelLabel.Location = new System.Drawing.Point(122, 44);
             this.StrongClickLevelLabel.Name = "StrongClickLevelLabel";
-            this.StrongClickLevelLabel.Size = new System.Drawing.Size(35, 13);
+            this.StrongClickLevelLabel.Size = new System.Drawing.Size(113, 13);
             this.StrongClickLevelLabel.TabIndex = 8;
             this.StrongClickLevelLabel.Text = "StrongClickLevelLabel";
             // 
@@ -227,7 +228,7 @@
             this.CPSLabel.AutoSize = true;
             this.CPSLabel.Location = new System.Drawing.Point(70, 66);
             this.CPSLabel.Name = "CPSLabel";
-            this.CPSLabel.Size = new System.Drawing.Size(35, 13);
+            this.CPSLabel.Size = new System.Drawing.Size(54, 13);
             this.CPSLabel.TabIndex = 5;
             this.CPSLabel.Text = "CPSLabel";
             // 
@@ -245,7 +246,7 @@
             this.CPCLabel.AutoSize = true;
             this.CPCLabel.Location = new System.Drawing.Point(70, 43);
             this.CPCLabel.Name = "CPCLabel";
-            this.CPCLabel.Size = new System.Drawing.Size(35, 13);
+            this.CPCLabel.Size = new System.Drawing.Size(54, 13);
             this.CPCLabel.TabIndex = 3;
             this.CPCLabel.Text = "CPCLabel";
             // 
@@ -263,7 +264,7 @@
             this.CookieColectedLabel.AutoSize = true;
             this.CookieColectedLabel.Location = new System.Drawing.Point(70, 20);
             this.CookieColectedLabel.Name = "CookieColectedLabel";
-            this.CookieColectedLabel.Size = new System.Drawing.Size(35, 13);
+            this.CookieColectedLabel.Size = new System.Drawing.Size(108, 13);
             this.CookieColectedLabel.TabIndex = 1;
             this.CookieColectedLabel.Text = "CookieColectedLabel";
             // 
@@ -313,6 +314,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "ClickerGame";
             this.Text = "CookieClicker";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClickerGame_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -352,6 +354,7 @@
         private System.Windows.Forms.Label PointerLevelLabel;
         private System.Windows.Forms.Button PointerButton;
         private System.Windows.Forms.Button StrongClickButton;
+        private System.Windows.Forms.FontDialog fontDialog1;
     }
 }
 
