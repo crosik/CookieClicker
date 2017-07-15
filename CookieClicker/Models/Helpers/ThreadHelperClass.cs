@@ -18,7 +18,7 @@ namespace CookieClicker.Models.Helpers
             // If these threads are different, it returns true. 
             if (ctrl.InvokeRequired)
             {
-                SetTextCallback d = new SetTextCallback(SetText);
+                SetTextCallback d = SetText;
                 form.Invoke(d, new object[] { form, ctrl, text });
             }
             else

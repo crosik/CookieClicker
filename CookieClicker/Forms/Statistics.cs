@@ -14,18 +14,22 @@ namespace CookieClicker.Forms
         {
             InitializeComponent();
             _clickerGame = game;
-            bw.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+            bw.DoWork += backgroundWorker1_DoWork;
             if (!bw.IsBusy)
             {
                 bw.RunWorkerAsync();
             }
         }
-
+        /// <summary>
+        /// Thread running to update every 200ms labels in form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             System.Timers.Timer myTimer = new System.Timers.Timer();
             myTimer.Elapsed += DisplayTimeEvent;
-            myTimer.Interval = 200; // 1000 ms is one second
+            myTimer.Interval = 200; 
             myTimer.Start();
         }
         private void DisplayTimeEvent(object source, ElapsedEventArgs e)
@@ -34,7 +38,7 @@ namespace CookieClicker.Forms
         }
 
         /// <summary>
-        /// Reloading all labels with Game data
+        /// Reloading all labels with Game data statistics
         /// </summary>
         private void ReloadLabels()
         {
