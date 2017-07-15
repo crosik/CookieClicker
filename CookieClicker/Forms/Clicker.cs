@@ -17,7 +17,7 @@ namespace CookieClicker.Forms
         public ClickerGame()
         {
             InitializeComponent();
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\save.xml"))
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\save.xmlenc"))
             {
                 LoadGame();
             }
@@ -165,9 +165,13 @@ namespace CookieClicker.Forms
         private void SaveGame()
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + @"\save.xml";
-            FileStream outFile = File.Create(path);
-            XmlSerializer formatter = new XmlSerializer(typeof(Game));
-            formatter.Serialize(outFile, _clickerGame);
+            using (FileStream outFile = File.Create(path))
+            {
+                XmlSerializer formatter = new XmlSerializer(typeof(Game));
+                formatter.Serialize(outFile, _clickerGame);
+            }
+            Hash.EncryptFile(path, path + "enc");
+            File.Delete(path);
         }
 
 
@@ -176,13 +180,18 @@ namespace CookieClicker.Forms
         /// </summary>
         private void LoadGame()
         {
-            string file = AppDomain.CurrentDomain.BaseDirectory + @"\save.xml";
+            string path = AppDomain.CurrentDomain.BaseDirectory + @"\save.xml";
+            Hash.DecryptFile(path+"enc",path);
+            File.Delete(path+"enc");
             XmlSerializer formatter = new XmlSerializer(typeof(Game));
-            FileStream aFile = new FileStream(file, FileMode.Open);
-            byte[] buffer = new byte[aFile.Length];
-            aFile.Read(buffer, 0, (int)aFile.Length);
-            MemoryStream stream = new MemoryStream(buffer);
-            _clickerGame = (Game)formatter.Deserialize(stream);
+            using (FileStream aFile = new FileStream(path, FileMode.Open))
+            {
+                byte[] buffer = new byte[aFile.Length];
+                aFile.Read(buffer, 0, (int) aFile.Length);
+                MemoryStream stream = new MemoryStream(buffer);
+                _clickerGame = (Models.Game) formatter.Deserialize(stream);        
+            }
+            File.Delete(path);
         }
 
         private void ClickerGame_FormClosing(object sender, FormClosingEventArgs e)

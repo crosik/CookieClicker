@@ -1,34 +1,76 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace CookieClicker.Models.Helpers
 {
     public class Hash
     {
-        private readonly byte[] _entropy = { 1, 2, 3, 4, 5, 6 }; //the entropy
-        private string Encrypt(string text)
+        public static void EncryptFile(string inputFile, string outputFile)
         {
-            // first, convert the text to byte array 
-            byte[] originalText = Encoding.Unicode.GetBytes(text);
 
-            // then use Protect() to encrypt your data 
-            byte[] encryptedText = ProtectedData.Protect(originalText, _entropy, DataProtectionScope.CurrentUser);
+            try
+            {
+                string password = @"myKey123"; // Your Key Here
+                UnicodeEncoding UE = new UnicodeEncoding();
+                byte[] key = UE.GetBytes(password);
 
-            //and return the encrypted message 
-            return Convert.ToBase64String(encryptedText);
+                string cryptFile = outputFile;
+                FileStream fsCrypt = new FileStream(cryptFile, FileMode.Create);
+
+                RijndaelManaged RMCrypto = new RijndaelManaged();
+
+                CryptoStream cs = new CryptoStream(fsCrypt,
+                    RMCrypto.CreateEncryptor(key, key),
+                    CryptoStreamMode.Write);
+
+                FileStream fsIn = new FileStream(inputFile, FileMode.Open);
+
+                int data;
+                while ((data = fsIn.ReadByte()) != -1)
+                    cs.WriteByte((byte)data);
+
+
+                fsIn.Close();
+                cs.Close();
+                fsCrypt.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Encryption failed!", "Error");
+            }
         }
 
-        private string Decrypt(string text)
+        public static void DecryptFile(string inputFile, string outputFile)
         {
-            // the encrypted text, converted to byte array 
-            byte[] encryptedText = Convert.FromBase64String(text);
 
-            // calling Unprotect() that returns the original text 
-            byte[] originalText = ProtectedData.Unprotect(encryptedText, _entropy, DataProtectionScope.CurrentUser);
+            {
+                string password = @"myKey123"; // Your Key Here
 
-            // finally, returning the result 
-            return Encoding.Unicode.GetString(originalText);
+                UnicodeEncoding UE = new UnicodeEncoding();
+                byte[] key = UE.GetBytes(password);
+
+                FileStream fsCrypt = new FileStream(inputFile, FileMode.Open);
+
+                RijndaelManaged RMCrypto = new RijndaelManaged();
+
+                CryptoStream cs = new CryptoStream(fsCrypt,
+                    RMCrypto.CreateDecryptor(key, key),
+                    CryptoStreamMode.Read);
+
+                FileStream fsOut = new FileStream(outputFile, FileMode.Create);
+
+                int data;
+                while ((data = cs.ReadByte()) != -1)
+                    fsOut.WriteByte((byte)data);
+
+                fsOut.Close();
+                cs.Close();
+                fsCrypt.Close();
+
+            }
         }
     }
 }
